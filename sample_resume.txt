@@ -1,0 +1,5 @@
+Ayush Tiwari
+IIT Guwahati (Class of 2028)
+AI Engineering Intern Resume
+Technical Skills: Python, PyTorch, JAX, Transformers, C++, time-series forecasting, Docker, LangChain, RAG
+Additional Interests: High-performance computing (HPC) research.

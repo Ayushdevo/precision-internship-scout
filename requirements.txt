@@ -1,0 +1,4 @@
+streamlit
+fastmcp
+python-dotenv
+pypdf
