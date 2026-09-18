@@ -1,6 +1,6 @@
 import streamlit as st
 import time
-import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 from jobs import fetch_vetted_jobs
@@ -232,7 +232,7 @@ from scoring import compute_dynamic_match, build_profile_text
 # 1. FIXED SIDEBAR - Candidate Profile (Secure Local Data Vault)
 with st.sidebar:
     st.markdown('<div class="sidebar-title">🔒 Candidate Profile</div>', unsafe_allow_html=True)
-    st.markdown('<div class="vault-badge">Secure Local Data Vault</div>', unsafe_allow_html=True)
+    st.markdown('<div class="vault-badge">Session profile</div>', unsafe_allow_html=True)
     
     # Pre-filled credentials per specification
     candidate_name = st.text_input(
@@ -272,18 +272,19 @@ with st.sidebar:
     
     resume_text = ""
     # Look for local sample_resume.txt as a fallback to auto-populate the local vault
-    sample_path = "sample_resume.txt"
+    sample_path = Path(__file__).with_name("sample_resume.txt")
+    use_sample = st.checkbox("Use bundled demo resume", value=False, key="use_sample_resume")
     auto_loaded = False
     
     if resume_file is not None:
         resume_text = extract_resume_text(resume_file)
         st.markdown(f'<div class="resume-badge">📄 Resume Vault Loaded ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
-    elif os.path.exists(sample_path):
+    elif use_sample and sample_path.exists():
         try:
             with open(sample_path, "r", encoding="utf-8") as f:
                 resume_text = f.read()
                 auto_loaded = True
-            st.markdown(f'<div class="resume-badge" style="background-color: rgba(99,102,241,0.15); color: #818cf8; border-color: rgba(99,102,241,0.3);">📄 Auto-loaded Local Resume ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="resume-badge" style="background-color: rgba(99,102,241,0.15); color: #818cf8; border-color: rgba(99,102,241,0.3);">📄 Demo Resume ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
         except Exception:
             pass
     
@@ -291,7 +292,7 @@ with st.sidebar:
     st.markdown(
         """
         <div style="font-size: 0.8rem; color: #64748b; line-height: 1.4;">
-        <strong>Vault Integrity:</strong> Your resume and profile inputs are held strictly local in Streamlit session memory. Bypasses third-party aggregators entirely.
+        <strong>Session privacy:</strong> Resume text is processed on the Streamlit server. On a hosted deployment, uploads leave your device. The app does not intentionally save uploaded resumes to disk.
         </div>
         """,
         unsafe_allow_html=True

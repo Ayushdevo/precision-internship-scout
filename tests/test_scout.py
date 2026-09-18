@@ -103,3 +103,13 @@ def test_pdf_pages_keep_word_boundaries_and_report_unreadable_content(monkeypatc
     monkeypatch.setattr(pypdf, 'PdfReader', lambda stream: SimpleNamespace(is_encrypted=False, pages=[]))
     with pytest.raises(ValueError, match='No text'):
         extract_resume_text(upload)
+
+
+def test_demo_resume_requires_explicit_opt_in():
+    from streamlit.testing.v1 import AppTest
+    app = AppTest.from_file('../app.py').run()
+    assert app.checkbox(key='use_sample_resume').value is False
+    assert not any('Demo Resume (' in item.value for item in app.markdown)
+    app.checkbox(key='use_sample_resume').check().run()
+    assert not app.exception
+    assert any('Demo Resume (' in item.value for item in app.markdown)
