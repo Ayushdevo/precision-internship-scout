@@ -62,3 +62,25 @@ def test_job_rendering_escapes_markup_and_rejects_active_links():
     for link in ['javascript:alert(1)', 'data:text/html,x', 'https://user:pass@example.com', 'https://example.com/\nscript', '//example.com']:
         assert safe_careers_url(link) is None
     assert safe_careers_url('https://example.com/careers') == 'https://example.com/careers'
+
+
+def test_txt_upload_is_repeatable_decodes_bom_and_restores_cursor():
+    from io import BytesIO
+    from resume import extract_resume_text
+    upload = BytesIO(b'\xef\xbb\xbfPython and SQL')
+    upload.name = 'resume.TXT'
+    upload.seek(4)
+    assert extract_resume_text(upload) == 'Python and SQL'
+    assert upload.tell() == 4
+    assert extract_resume_text(upload) == 'Python and SQL'
+
+
+def test_upload_rejects_unsupported_empty_or_oversized_files():
+    import pytest
+    from io import BytesIO
+    from resume import extract_resume_text, MAX_UPLOAD_BYTES
+    for name, data in [('cv.exe', b'bytes'), ('cv.txt', b''), ('cv.txt', b'x' * (MAX_UPLOAD_BYTES + 1)), ('cv.txt', b'\xff')]:
+        upload = BytesIO(data)
+        upload.name = name
+        with pytest.raises(ValueError):
+            extract_resume_text(upload)

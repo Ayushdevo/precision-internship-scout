@@ -217,24 +217,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Helper function to extract text from TXT or PDF resume files
+from resume import extract_resume_text as parse_resume
+
+
 def extract_resume_text(uploaded_file) -> str:
-    if uploaded_file is None:
-        return ""
     try:
-        file_name = uploaded_file.name.lower()
-        if file_name.endswith(".txt"):
-            return uploaded_file.read().decode("utf-8")
-        elif file_name.endswith(".pdf"):
-            import pypdf
-            reader = pypdf.PdfReader(uploaded_file)
-            text = ""
-            for page in reader.pages:
-                text += page.extract_text() or ""
-            return text
-    except Exception as e:
-        st.sidebar.error(f"Error parsing resume: {e}")
-    return ""
+        return parse_resume(uploaded_file)
+    except ValueError as exc:
+        st.sidebar.error(str(exc))
+        return ""
 
 from scoring import compute_dynamic_match, build_profile_text
 
