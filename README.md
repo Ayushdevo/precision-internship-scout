@@ -26,3 +26,17 @@ To expose the sample source over MCP, run `python mcp_server.py`.
 Resume processing occurs in the Streamlit server process. When deployed remotely,
 the uploaded resume is sent to that server; it does not remain on the browser device.
 The app does not intentionally write uploaded resumes to disk.
+
+## Tests and result handling
+
+```bash
+python -m pip install pytest
+python -m pytest -q
+```
+
+Tests cover filters, keyword boundaries and score arithmetic, uploaded resume parsing,
+escaped card rendering, CSV exports, and Streamlit search/rerun behavior. GitHub Actions
+runs them on Python 3.11 and 3.12. Sample resumes are opt-in. Uploads accept UTF-8 TXT
+or text-based PDF up to 2 MB; scanned PDFs need OCR before uploading. Search results
+persist while editing a profile and clear when the search keyword changes. CSV exports
+include listing provenance and matched requirements, but exclude uploaded resume text.
