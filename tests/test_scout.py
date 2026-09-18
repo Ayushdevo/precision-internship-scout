@@ -15,3 +15,7 @@ def test_search_results_do_not_share_mutable_requirement_lists():
     first = fetch_vetted_jobs('')
     first[0]['requirements'].append('Mutation')
     assert 'Mutation' not in fetch_vetted_jobs('')[0]['requirements']
+
+
+def test_every_sample_explicitly_reports_unverified_demo_provenance():
+    assert all(job['source_type'] == 'demo' and job['verified'] is False for job in fetch_vetted_jobs(''))

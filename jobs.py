@@ -1,14 +1,7 @@
 def fetch_vetted_jobs(role_keyword: str) -> list:
-    """
-    Fetch premium, vetted tech job listings for 2026 AI Engineering Internships.
-    This tool serves as an interface for the Scout Agent to programmatically access
-    our secure and verified company job pipelines.
-    
-    Args:
-        role_keyword (str): The keyword used to filter relevant internships (e.g., 'AI', 'Quant', 'Research').
-        
-    Returns:
-        list: A list of dict items containing premium, mock tech listings with structured attributes.
+    """Search illustrative sample listings, not verified current openings.
+
+    Empty keywords return all samples; unmatched keywords return an empty list.
     """
     # Curated premium mock listings representing high-signal target pipelines
     mock_jobs = [
@@ -57,6 +50,9 @@ def fetch_vetted_jobs(role_keyword: str) -> list:
         }
     ]
     
+    for job in mock_jobs:
+        job["source_type"] = "demo"
+        job["verified"] = False
     # Filter based on search criteria
     if not role_keyword or role_keyword.strip() == "":
         return mock_jobs

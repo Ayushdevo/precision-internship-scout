@@ -353,9 +353,9 @@ st.markdown(
 
 # Render a beautiful introduction card explaining the multi-agent system
 st.info(
-    "🤖 **Multi-Agent Architecture Overview**: Under the hood, an **Orchestrator Agent** parsing intent collaborates "
-    "with a **Scout Agent** to pull exclusive pipelines via the MCP tool `fetch_vetted_jobs`, and an **Assessor "
-    "Agent** evaluating alignment metrics directly against your secure Candidate Profile Vault."
+    "Demo mode: these are illustrative sample listings, not verified live vacancies. "
+    "Scores reflect keyword overlap with your profile, not hiring probability. "
+    "The app does not submit applications."
 )
 
 # Compile candidate profile text for dynamic scoring
@@ -390,7 +390,7 @@ if deploy_button:
         # Complete the status sequence
         status.update(label="Analysis Pipeline Complete!", state="complete", expanded=False)
         
-    st.success("✅ Vetting complete. Rendered below are the matched premium positions:")
+    st.success("Sample search complete. Review the illustrative matches below:")
 
     # 4. RENDER VETTED JOB MATCH CARDS
     # We define the deterministic mock data attributes and ratings as requested by the specification
@@ -497,7 +497,7 @@ if deploy_button:
                 
             # Direct link button
             st.markdown(
-                f'<a class="apply-btn" href="{job["url"]}" target="_blank">🔗 Access Vetted pipeline</a>', 
+                f'<a class="apply-btn" href="{job["url"]}" target="_blank">🔗 Open sample careers link</a>',
                 unsafe_allow_html=True
             )
             st.write("") # Spacer between containers
