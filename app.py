@@ -3,6 +3,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from jobs import fetch_vetted_jobs
+from exports import export_matches_csv
 from rendering import render_job_card, safe_careers_url
 
 # Load environment variables
@@ -342,6 +343,12 @@ if "scout_jobs" in st.session_state:
     jobs_to_assess = st.session_state["scout_jobs"]
     if not jobs_to_assess:
         st.info("No sample listings match this keyword. Try Python, AI, or Research.")
+
+    if jobs_to_assess:
+        st.download_button(
+            "Download sample matches CSV", export_matches_csv(jobs_to_assess, combined_profile_text),
+            file_name="sample_job_matches.csv", mime="text/csv", key="download_matches",
+        )
 
     # Render clean stacked containers
     for job in jobs_to_assess:

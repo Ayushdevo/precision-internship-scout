@@ -135,3 +135,16 @@ def test_search_results_survive_profile_edits_but_not_changed_queries():
     assert any('QuantLabs' in item.value for item in app.markdown)
     app.text_input(key='search_keyword').set_value('unobtainium').run()
     assert not any('QuantLabs' in item.value for item in app.markdown)
+
+
+def test_csv_export_preserves_provenance_and_escapes_formula_cells():
+    import csv
+    from io import StringIO
+    from exports import export_matches_csv
+    jobs = fetch_vetted_jobs('Quant')
+    jobs[0]['company'] = '=HYPERLINK("bad")'
+    text = export_matches_csv(jobs, 'Python; PRIVATE_RESUME_MARKER')
+    row = list(csv.DictReader(StringIO(text)))[0]
+    assert row['company'].startswith("'=")
+    assert row['source_type'] == 'demo' and row['verified'] == 'False'
+    assert 'PRIVATE_RESUME_MARKER' not in text
