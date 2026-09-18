@@ -3,13 +3,7 @@ import time
 import os
 from dotenv import load_dotenv
 
-# Import our custom MCP tool directly for a programmatic connection demonstrating the agent pattern
-try:
-    from mcp_server import fetch_vetted_jobs
-except ImportError:
-    # Fallback in case import fails during testing
-    def fetch_vetted_jobs(role_keyword: str) -> list:
-        return []
+from jobs import fetch_vetted_jobs
 
 # Load environment variables
 load_dotenv()
