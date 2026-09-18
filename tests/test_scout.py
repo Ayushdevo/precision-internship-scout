@@ -29,3 +29,10 @@ def test_dashboard_renders_search_results_including_empty_state():
     assert not app.exception
     assert any('No sample listings' in item.value for item in app.info)
     assert not any('job-card-title' in item.value and 'Google DeepMind' in item.value for item in app.markdown)
+
+
+def test_scoring_uses_case_insensitive_skill_boundaries_and_unique_requirements():
+    from scoring import compute_dynamic_match
+    _, matched, missing = compute_dynamic_match(['Python','SQL','C++','R','Python',' '], 'PYTHON, NoSQL, C++, Docker')
+    assert matched == ['Python','C++']
+    assert missing == ['SQL','R']

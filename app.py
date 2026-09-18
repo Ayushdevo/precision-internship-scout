@@ -235,44 +235,7 @@ def extract_resume_text(uploaded_file) -> str:
         st.sidebar.error(f"Error parsing resume: {e}")
     return ""
 
-# Helper to compute dynamic match scores based on profile and resume content
-def compute_dynamic_match(requirements: list, profile_text: str, default_score: int) -> tuple:
-    if not profile_text.strip():
-        return 50, [], requirements
-        
-    matched = []
-    missing = []
-    
-    for req in requirements:
-        req_clean = req.lower().strip()
-        
-        # Check standard text-matching variants
-        found = False
-        if req_clean in profile_text:
-            found = True
-        else:
-            # Token matching: check key words (length > 3) to prevent minor match failure
-            words = [w for w in req_clean.replace(",", "").replace("/", " ").replace("(", "").replace(")", "").split() if len(w) > 3]
-            if words and all(w in profile_text for w in words):
-                found = True
-                
-        if found:
-            matched.append(req)
-        else:
-            missing.append(req)
-            
-    # Compute score dynamically: base score 60% plus percentage mapping of requirements
-    total = len(requirements)
-    if total == 0:
-        return 100, [], []
-        
-    match_ratio = len(matched) / total
-    # Align score dynamically while letting it fluctuate naturally around target scores
-    dynamic_score = int(60 + 40 * match_ratio)
-    if dynamic_score > 100:
-        dynamic_score = 100
-        
-    return dynamic_score, matched, missing
+from scoring import compute_dynamic_match
 
 # 1. FIXED SIDEBAR - Candidate Profile (Secure Local Data Vault)
 with st.sidebar:
