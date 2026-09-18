@@ -123,3 +123,15 @@ def test_search_progress_reports_actual_result_count():
     assert not app.exception
     assert any('Found 1 illustrative listings.' in item.value for item in app.markdown)
     assert not any('verified listings' in item.value for item in app.markdown)
+
+
+def test_search_results_survive_profile_edits_but_not_changed_queries():
+    from streamlit.testing.v1 import AppTest
+    app = AppTest.from_file('../app.py').run()
+    app.text_input(key='search_keyword').set_value('Quant')
+    app.button(key='btn_deploy_scout').click().run()
+    app.text_area(key='vault_candidate_skills').set_value('Python').run()
+    assert not app.exception
+    assert any('QuantLabs' in item.value for item in app.markdown)
+    app.text_input(key='search_keyword').set_value('unobtainium').run()
+    assert not any('QuantLabs' in item.value for item in app.markdown)

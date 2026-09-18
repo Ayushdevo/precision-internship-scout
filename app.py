@@ -327,12 +327,19 @@ if deploy_button:
         st.write(f"Found {len(vetted_listings)} illustrative listings.")
         status.update(label="Sample search complete", state="complete", expanded=False)
 
+    st.session_state["scout_jobs"] = vetted_listings
+    st.session_state["scout_query"] = role_keyword.strip().casefold()
+
+if st.session_state.get("scout_query") != role_keyword.strip().casefold():
+    st.session_state.pop("scout_jobs", None)
+
+if "scout_jobs" in st.session_state:
     st.success("Sample search complete. Review the illustrative matches below:")
 
     # 4. RENDER VETTED JOB MATCH CARDS
     # We define the deterministic mock data attributes and ratings as requested by the specification
     # We calculate the scores dynamically based on actual skill match overlaps!
-    jobs_to_assess = vetted_listings
+    jobs_to_assess = st.session_state["scout_jobs"]
     if not jobs_to_assess:
         st.info("No sample listings match this keyword. Try Python, AI, or Research.")
 
