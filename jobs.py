@@ -61,7 +61,7 @@ def fetch_vetted_jobs(role_keyword: str) -> list:
     if not role_keyword or role_keyword.strip() == "":
         return mock_jobs
         
-    keyword_lower = role_keyword.lower()
+    keyword_lower = role_keyword.strip().casefold()
     filtered_jobs = []
     
     for job in mock_jobs:
@@ -71,5 +71,5 @@ def fetch_vetted_jobs(role_keyword: str) -> list:
             any(keyword_lower in req.lower() for req in job["requirements"])):
             filtered_jobs.append(job)
             
-    # Fallback to returning all jobs if filtering is overly restrictive
-    return filtered_jobs if filtered_jobs else mock_jobs
+    # An empty match set is a valid search result.
+    return filtered_jobs
