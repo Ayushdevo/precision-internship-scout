@@ -1,5 +1,4 @@
 import streamlit as st
-import time
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -320,34 +319,14 @@ st.info(
 combined_profile_text = build_profile_text(candidate_skills, resume_text)
 
 # Wide Primary Action Button
-deploy_button = st.button("Deploy Scout Agents", key="btn_deploy_scout")
+deploy_button = st.button("Search sample listings", key="btn_deploy_scout")
 
 if deploy_button:
-    # 3. REAL-TIME MULTI-AGENT WORKFLOW SIMULATION LOG
-    with st.status("🔍 Spawning Concierge Pipeline Agents...", expanded=True) as status:
-        # Step 1: Orchestrator Agent (1.5s delay)
-        st.write("⚙️ Initializing Orchestrator Agent... Intent parsed. Target set to 2026 AI roles.")
-        time.sleep(1.5)
-        
-        # Step 2: Scout Agent querying listings from MCP server (2.0s delay)
-        st.write("🔍 Scout Agent: Connecting to MCP Server (`fetch_vetted_jobs`)... Retrieved 3 verified listings. Bypassed mass aggregators.")
-        # Programmatically retrieve data from the tool to feed our assessor agent
+    with st.status("Searching sample listings...", expanded=True) as status:
         vetted_listings = fetch_vetted_jobs(role_keyword)
-        time.sleep(2.0)
-        
-        # Step 3: Assessor Agent parsing resume & cross-referencing profile (2.5s delay)
-        if resume_file is not None or auto_loaded:
-            st.write("📄 Assessor Agent: Parsing uploaded resume and compiling secure profile keywords...")
-            time.sleep(1.0)
-            st.write("🧠 Assessor Agent: Cross-referencing technical requirements against candidate profile...")
-            time.sleep(1.5)
-        else:
-            st.write("🧠 Assessor Agent: Cross-referencing technical requirements against candidate profile...")
-            time.sleep(2.5)
-        
-        # Complete the status sequence
-        status.update(label="Analysis Pipeline Complete!", state="complete", expanded=False)
-        
+        st.write(f"Found {len(vetted_listings)} illustrative listings.")
+        status.update(label="Sample search complete", state="complete", expanded=False)
+
     st.success("Sample search complete. Review the illustrative matches below:")
 
     # 4. RENDER VETTED JOB MATCH CARDS
@@ -402,4 +381,4 @@ if deploy_button:
             st.write("---")
 
 else:
-    st.write("👈 Upload your resume and configure profile details in the Secure Local Data Vault, then deploy the Scout Agents pipeline.")
+    st.write("👈 Upload your resume and configure profile details in the Secure Local Data Vault, then search the sample listings.")

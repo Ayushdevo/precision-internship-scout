@@ -113,3 +113,13 @@ def test_demo_resume_requires_explicit_opt_in():
     app.checkbox(key='use_sample_resume').check().run()
     assert not app.exception
     assert any('Demo Resume (' in item.value for item in app.markdown)
+
+
+def test_search_progress_reports_actual_result_count():
+    from streamlit.testing.v1 import AppTest
+    app = AppTest.from_file('../app.py').run()
+    app.text_input(key='search_keyword').set_value('Quant')
+    app.button(key='btn_deploy_scout').click().run()
+    assert not app.exception
+    assert any('Found 1 illustrative listings.' in item.value for item in app.markdown)
+    assert not any('verified listings' in item.value for item in app.markdown)
