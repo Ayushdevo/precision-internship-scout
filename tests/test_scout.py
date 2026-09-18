@@ -19,3 +19,13 @@ def test_search_results_do_not_share_mutable_requirement_lists():
 
 def test_every_sample_explicitly_reports_unverified_demo_provenance():
     assert all(job['source_type'] == 'demo' and job['verified'] is False for job in fetch_vetted_jobs(''))
+
+
+def test_dashboard_renders_search_results_including_empty_state():
+    from streamlit.testing.v1 import AppTest
+    app = AppTest.from_file('../app.py', default_timeout=20).run()
+    app.text_input(key='search_keyword').set_value('unobtainium')
+    app.button(key='btn_deploy_scout').click().run()
+    assert not app.exception
+    assert any('No sample listings' in item.value for item in app.info)
+    assert not any('job-card-title' in item.value and 'Google DeepMind' in item.value for item in app.markdown)

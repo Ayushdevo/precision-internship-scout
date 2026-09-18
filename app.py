@@ -298,6 +298,8 @@ with st.sidebar:
         key="vault_candidate_target"
     )
     
+    role_keyword = st.text_input("Search keyword", value="AI", key="search_keyword")
+
     # Comma-separated text area for core skills
     candidate_skills = st.text_area(
         "Core Skills",
@@ -374,7 +376,7 @@ if deploy_button:
         # Step 2: Scout Agent querying listings from MCP server (2.0s delay)
         st.write("🔍 Scout Agent: Connecting to MCP Server (`fetch_vetted_jobs`)... Retrieved 3 verified listings. Bypassed mass aggregators.")
         # Programmatically retrieve data from the tool to feed our assessor agent
-        vetted_listings = fetch_vetted_jobs("AI")
+        vetted_listings = fetch_vetted_jobs(role_keyword)
         time.sleep(2.0)
         
         # Step 3: Assessor Agent parsing resume & cross-referencing profile (2.5s delay)
@@ -395,51 +397,14 @@ if deploy_button:
     # 4. RENDER VETTED JOB MATCH CARDS
     # We define the deterministic mock data attributes and ratings as requested by the specification
     # We calculate the scores dynamically based on actual skill match overlaps!
-    jobs_to_assess = [
-        {
-            "company": "Google DeepMind",
-            "title": "Research Intern, AI Engineering (2026)",
-            "location": "London, UK / Mountain View, CA (Hybrid)",
-            "default_score": 95,
-            "requirements": ["Python", "PyTorch", "JAX", "Transformers", "Strong mathematical foundation"],
-            "url": "https://deepmind.google/careers",
-            "base_verdict": (
-                f"Your deep familiarity with PyTorch, JAX, and Transformers aligns perfectly with Google DeepMind's "
-                f"AI research core requirements. Your affiliation with {candidate_univ} guarantees the rigorous mathematical "
-                f"and coding foundation needed. Fully recommended for direct submission bypass."
-            )
-        },
-        {
-            "company": "QuantLabs",
-            "title": "Quantitative AI Research Intern (2026)",
-            "location": "New York, NY (In-Person)",
-            "default_score": 82,
-            "requirements": ["Python", "C++", "PyTorch", "Time-series forecasting", "High-performance computing"],
-            "url": "https://quantlabs.com/careers",
-            "base_verdict": (
-                f"Python and PyTorch skills are robust. However, the role's strong emphasis on high-performance "
-                f"computing, time-series forecasting, and potential C++ operations represents a mismatch based on your active skills."
-            )
-        },
-        {
-            "company": "TechScale AI",
-            "title": "AI Platform Engineer Intern (2026)",
-            "location": "San Francisco, CA (Remote / In-Person)",
-            "default_score": 60,
-            "requirements": ["Python", "Docker", "vLLM", "RAG", "LangChain", "Vector Databases", "API Design"],
-            "url": "https://techscale.ai/careers",
-            "base_verdict": (
-                f"While you have basic knowledge of Docker, RAG, and LangChain, the team is building infrastructure "
-                f"requiring heavy backend API engineering and microservices deployment. Consider completing coursework/projects "
-                f"in production container scheduling and systems engineering before applying."
-            )
-        }
-    ]
+    jobs_to_assess = vetted_listings
+    if not jobs_to_assess:
+        st.info("No sample listings match this keyword. Try Python, AI, or Research.")
 
     # Render clean stacked containers
     for job in jobs_to_assess:
         # Dynamically compute the score & match lists
-        score, matched_reqs, missing_reqs = compute_dynamic_match(job["requirements"], combined_profile_text, job["default_score"])
+        score, matched_reqs, missing_reqs = compute_dynamic_match(job["requirements"], combined_profile_text, 0)
         
         # Classify badge colors and warnings based on calculated score
         if score >= 90:
@@ -482,9 +447,9 @@ if deploy_button:
             missing_str = ", ".join(missing_reqs) if missing_reqs else "None"
             
             verdict_text = (
-                f"**Assessor Verdict:** {job['base_verdict']}\n\n"
-                f"🌐 **Vetted Skills Match:** {matched_str}\n\n"
-                f"⚠️ **Identified Gap Areas:** {missing_str}"
+                f"**Keyword coverage:** {len(matched_reqs)} of {len(job['requirements'])} requirements matched.\n\n"
+                f"**Matched keywords:** {matched_str}\n\n"
+                f"**Keywords not found:** {missing_str}"
             )
             
             # Use color highlight blocks matching the severity of the match score
@@ -497,7 +462,7 @@ if deploy_button:
                 
             # Direct link button
             st.markdown(
-                f'<a class="apply-btn" href="{job["url"]}" target="_blank">🔗 Open sample careers link</a>',
+                f'<a class="apply-btn" href="{job["target_link"]}" target="_blank">🔗 Open sample careers link</a>',
                 unsafe_allow_html=True
             )
             st.write("") # Spacer between containers
