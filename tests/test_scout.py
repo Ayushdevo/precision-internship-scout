@@ -51,3 +51,14 @@ def test_profile_scoring_uses_skill_evidence_and_resume_only():
     from scoring import build_profile_text, compute_dynamic_match
     text = build_profile_text('Python', 'Built data pipelines')
     assert compute_dynamic_match(['Python','AI Engineer Intern'], text)[1:] == (['Python'], ['AI Engineer Intern'])
+
+
+def test_job_rendering_escapes_markup_and_rejects_active_links():
+    from rendering import render_job_card, safe_careers_url
+    job = {'company':'<script>alert(1)</script>', 'title':'A & B', 'location':'<img src=x>', 'requirements':['<b>Python</b>']}
+    html = render_job_card(job, 0, [])
+    assert '<script>' not in html and '<img ' not in html and '<b>' not in html
+    assert '&lt;script&gt;' in html and 'A &amp; B' in html
+    for link in ['javascript:alert(1)', 'data:text/html,x', 'https://user:pass@example.com', 'https://example.com/\nscript', '//example.com']:
+        assert safe_careers_url(link) is None
+    assert safe_careers_url('https://example.com/careers') == 'https://example.com/careers'

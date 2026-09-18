@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 
 from jobs import fetch_vetted_jobs
+from rendering import render_job_card, safe_careers_url
 
 # Load environment variables
 load_dotenv()
@@ -381,30 +382,8 @@ if deploy_button:
             severity = "warning"
             
         with st.container():
-            # Build requirements HTML badges
-            req_html = ""
-            for req in job["requirements"]:
-                if req in matched_reqs:
-                    req_html += f'<span class="req-badge" style="border-color: rgba(52, 211, 153, 0.4); background-color: rgba(52, 211, 153, 0.08); color: #34d399;">✓ {req}</span>'
-                else:
-                    req_html += f'<span class="req-badge" style="border-color: rgba(239, 68, 68, 0.2); background-color: rgba(239, 68, 68, 0.02); color: #f87171;">✗ {req}</span>'
-            
-            # Custom styled HTML Card
-            st.markdown(f"""
-            <div class="job-card">
-                <div class="job-card-header">
-                    <div>
-                        <h3 class="job-card-title">{job['company']} — {job['title']}</h3>
-                        <div class="job-card-meta">📍 {job['location']}</div>
-                    </div>
-                    <span class="match-tag {badge_class}">{score}% Match</span>
-                </div>
-                <div>
-                    {req_html}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
+            st.markdown(render_job_card(job, score, matched_reqs), unsafe_allow_html=True)
+
             # Construct dynamic assessor explanation
             matched_str = ", ".join(matched_reqs) if matched_reqs else "None"
             missing_str = ", ".join(missing_reqs) if missing_reqs else "None"
@@ -423,11 +402,10 @@ if deploy_button:
             elif severity == "warning":
                 st.warning(verdict_text)
                 
-            # Direct link button
-            st.markdown(
-                f'<a class="apply-btn" href="{job["target_link"]}" target="_blank">🔗 Open sample careers link</a>',
-                unsafe_allow_html=True
-            )
+            link = safe_careers_url(job["target_link"])
+            if link:
+                st.link_button("Open sample careers link", link)
+
             st.write("") # Spacer between containers
             st.write("---")
 
