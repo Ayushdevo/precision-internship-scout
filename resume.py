@@ -27,5 +27,19 @@ def extract_resume_text(uploaded_file) -> str:
         except UnicodeDecodeError as exc:
             raise ValueError("Save the TXT resume using UTF-8 encoding") from exc
     import pypdf
-    reader = pypdf.PdfReader(BytesIO(data))
-    return "".join(page.extract_text() or "" for page in reader.pages)
+    try:
+        reader = pypdf.PdfReader(BytesIO(data))
+        if reader.is_encrypted:
+            raise ValueError("Upload an unencrypted PDF resume")
+        if len(reader.pages) > 50:
+            raise ValueError("PDF resume must contain at most 50 pages")
+        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        if not text.strip():
+            raise ValueError("No text found; upload a text-based PDF or TXT resume")
+        if len(text) > 100000:
+            raise ValueError("Extracted resume text exceeds 100,000 characters")
+        return text
+    except ValueError:
+        raise
+    except Exception as exc:
+        raise ValueError("Unable to read PDF; upload a valid text-based PDF or TXT resume") from exc

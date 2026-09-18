@@ -84,3 +84,22 @@ def test_upload_rejects_unsupported_empty_or_oversized_files():
         upload.name = name
         with pytest.raises(ValueError):
             extract_resume_text(upload)
+
+
+def test_pdf_pages_keep_word_boundaries_and_report_unreadable_content(monkeypatch):
+    import pytest
+    import pypdf
+    from io import BytesIO
+    from types import SimpleNamespace
+    from resume import extract_resume_text
+    upload = BytesIO(b'pdf placeholder')
+    upload.name = 'cv.pdf'
+    pages = [SimpleNamespace(extract_text=lambda: 'Python'), SimpleNamespace(extract_text=lambda: 'SQL')]
+    monkeypatch.setattr(pypdf, 'PdfReader', lambda stream: SimpleNamespace(is_encrypted=False, pages=pages))
+    assert extract_resume_text(upload) == 'Python\nSQL'
+    monkeypatch.setattr(pypdf, 'PdfReader', lambda stream: SimpleNamespace(is_encrypted=True))
+    with pytest.raises(ValueError, match='unencrypted'):
+        extract_resume_text(upload)
+    monkeypatch.setattr(pypdf, 'PdfReader', lambda stream: SimpleNamespace(is_encrypted=False, pages=[]))
+    with pytest.raises(ValueError, match='No text'):
+        extract_resume_text(upload)
