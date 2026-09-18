@@ -14,3 +14,8 @@ def compute_dynamic_match(requirements: list, profile_text: str, default_score: 
     if not requirements:
         return 0, [], []
     return round(100 * len(matched) / len(requirements)), matched, missing
+
+
+def build_profile_text(skills: str, resume: str) -> str:
+    """Only supplied skill evidence and resume text participate in scoring."""
+    return f"{skills}\n{resume}"

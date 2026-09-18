@@ -45,3 +45,9 @@ def test_scores_report_actual_overlap_without_an_artificial_floor():
     assert compute_dynamic_match(['Python'], '')[0] == 0
     assert compute_dynamic_match([], 'Python')[0] == 0
     assert compute_dynamic_match(['Python'], 'Python')[0] == 100
+
+
+def test_profile_scoring_uses_skill_evidence_and_resume_only():
+    from scoring import build_profile_text, compute_dynamic_match
+    text = build_profile_text('Python', 'Built data pipelines')
+    assert compute_dynamic_match(['Python','AI Engineer Intern'], text)[1:] == (['Python'], ['AI Engineer Intern'])

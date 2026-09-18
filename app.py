@@ -235,7 +235,7 @@ def extract_resume_text(uploaded_file) -> str:
         st.sidebar.error(f"Error parsing resume: {e}")
     return ""
 
-from scoring import compute_dynamic_match
+from scoring import compute_dynamic_match, build_profile_text
 
 # 1. FIXED SIDEBAR - Candidate Profile (Secure Local Data Vault)
 with st.sidebar:
@@ -324,7 +324,7 @@ st.info(
 )
 
 # Compile candidate profile text for dynamic scoring
-combined_profile_text = f"{candidate_skills} {resume_text} {candidate_univ} {candidate_target}".lower()
+combined_profile_text = build_profile_text(candidate_skills, resume_text)
 
 # Wide Primary Action Button
 deploy_button = st.button("Deploy Scout Agents", key="btn_deploy_scout")
