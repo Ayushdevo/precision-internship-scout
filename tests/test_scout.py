@@ -36,3 +36,12 @@ def test_scoring_uses_case_insensitive_skill_boundaries_and_unique_requirements(
     _, matched, missing = compute_dynamic_match(['Python','SQL','C++','R','Python',' '], 'PYTHON, NoSQL, C++, Docker')
     assert matched == ['Python','C++']
     assert missing == ['SQL','R']
+
+
+def test_scores_report_actual_overlap_without_an_artificial_floor():
+    from scoring import compute_dynamic_match
+    assert compute_dynamic_match(['Python','SQL'], 'Python')[0] == 50
+    assert compute_dynamic_match(['Python'], 'Docker')[0] == 0
+    assert compute_dynamic_match(['Python'], '')[0] == 0
+    assert compute_dynamic_match([], 'Python')[0] == 0
+    assert compute_dynamic_match(['Python'], 'Python')[0] == 100
