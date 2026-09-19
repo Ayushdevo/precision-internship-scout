@@ -4,12 +4,14 @@ from urllib.parse import urlsplit
 
 
 def safe_careers_url(value: str) -> str | None:
-    if not isinstance(value, str) or any(char.isspace() for char in value):
+    if not isinstance(value, str) or any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in value) or "\\" in value:
         return None
     try:
         parsed = urlsplit(value)
         if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
             return None
+        # Accessing port validates non-numeric and out-of-range ports.
+        parsed.port
         return value
     except ValueError:
         return None
@@ -28,3 +30,4 @@ def render_job_card(job: dict, score: int, matched: list[str]) -> str:
         f'<span class="match-tag match-tag-{style}">{int(score)}% keyword coverage</span></div>'
         f'<div>{badges}</div></div>'
     )
+
