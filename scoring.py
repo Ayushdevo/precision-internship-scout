@@ -14,7 +14,8 @@ def compute_dynamic_match(requirements: list, profile_text: str, default_score: 
         return 0, [], requirements
     matched, missing = [], []
     for req in requirements:
-        pattern = r"(?<!\w)" + re.escape(_normalize(req)) + r"(?!\w)"
+        # + and # distinguish C, C++, and C# rather than word suffixes.
+        pattern = r"(?<![\w+#])" + re.escape(_normalize(req)) + r"(?![\w+#])"
         (matched if re.search(pattern, profile_text) else missing).append(req)
     if not requirements:
         return 0, [], []
