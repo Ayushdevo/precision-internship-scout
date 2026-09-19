@@ -278,7 +278,8 @@ with st.sidebar:
     
     if resume_file is not None:
         resume_text = extract_resume_text(resume_file)
-        st.markdown(f'<div class="resume-badge">📄 Resume Vault Loaded ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
+        if resume_text:
+            st.markdown(f'<div class="resume-badge">📄 Resume Vault Loaded ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
     elif use_sample and sample_path.exists():
         try:
             with open(sample_path, "r", encoding="utf-8") as f:
@@ -374,7 +375,7 @@ if "scout_jobs" in st.session_state:
             missing_str = ", ".join(missing_reqs) if missing_reqs else "None"
             
             verdict_text = (
-                f"**Keyword coverage:** {len(matched_reqs)} of {len(job['requirements'])} requirements matched.\n\n"
+                f"**Keyword coverage:** {len(matched_reqs)} of {len(matched_reqs) + len(missing_reqs)} requirements matched.\n\n"
                 f"**Matched keywords:** {matched_str}\n\n"
                 f"**Keywords not found:** {missing_str}"
             )
@@ -396,3 +397,4 @@ if "scout_jobs" in st.session_state:
 
 else:
     st.write("👈 Upload your resume and configure profile details in the Secure Local Data Vault, then search the sample listings.")
+

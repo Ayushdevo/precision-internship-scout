@@ -3,6 +3,7 @@ from io import BytesIO
 from pathlib import Path
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024
+MAX_TEXT_CHARS = 100000
 
 
 def extract_resume_text(uploaded_file) -> str:
@@ -23,7 +24,12 @@ def extract_resume_text(uploaded_file) -> str:
         raise ValueError("Resume must be 2 MB or smaller")
     if extension == ".txt":
         try:
-            return data.decode("utf-8-sig")
+            text = data.decode("utf-8-sig")
+            if not text.strip():
+                raise ValueError("Resume must contain non-whitespace text")
+            if len(text) > MAX_TEXT_CHARS:
+                raise ValueError("Extracted resume text exceeds 100,000 characters")
+            return text
         except UnicodeDecodeError as exc:
             raise ValueError("Save the TXT resume using UTF-8 encoding") from exc
     import pypdf
@@ -33,13 +39,20 @@ def extract_resume_text(uploaded_file) -> str:
             raise ValueError("Upload an unencrypted PDF resume")
         if len(reader.pages) > 50:
             raise ValueError("PDF resume must contain at most 50 pages")
-        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        parts = []
+        total = 0
+        for page in reader.pages:
+            part = page.extract_text() or ""
+            total += len(part) + bool(parts)
+            if total > MAX_TEXT_CHARS:
+                raise ValueError("Extracted resume text exceeds 100,000 characters")
+            parts.append(part)
+        text = "\n".join(parts)
         if not text.strip():
             raise ValueError("No text found; upload a text-based PDF or TXT resume")
-        if len(text) > 100000:
-            raise ValueError("Extracted resume text exceeds 100,000 characters")
         return text
     except ValueError:
         raise
     except Exception as exc:
         raise ValueError("Unable to read PDF; upload a valid text-based PDF or TXT resume") from exc
+
