@@ -4,7 +4,7 @@ import unicodedata
 
 
 def _normalize(text: str) -> str:
-    return unicodedata.normalize("NFKC", text).casefold()
+    return " ".join(unicodedata.normalize("NFKC", text).casefold().split())
 
 
 def compute_dynamic_match(requirements: list, profile_text: str, default_score: int = 0) -> tuple:
