@@ -278,7 +278,8 @@ with st.sidebar:
     
     if resume_file is not None:
         resume_text = extract_resume_text(resume_file)
-        st.markdown(f'<div class="resume-badge">📄 Resume Vault Loaded ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
+        if resume_text:
+            st.markdown(f'<div class="resume-badge">📄 Resume Vault Loaded ({len(resume_text)} chars)</div>', unsafe_allow_html=True)
     elif use_sample and sample_path.exists():
         try:
             with open(sample_path, "r", encoding="utf-8") as f:
