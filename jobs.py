@@ -63,7 +63,8 @@ def fetch_vetted_jobs(role_keyword: str) -> list:
     for job in mock_jobs:
         # Check if the keyword matches the title, company, or any of the requirements
         if (keyword_lower in job["title"].lower() or 
-            keyword_lower in job["company"].lower() or 
+            keyword_lower in job["company"].lower() or
+            keyword_lower in job["location"].casefold() or
             any(keyword_lower in req.lower() for req in job["requirements"])):
             filtered_jobs.append(job)
             
