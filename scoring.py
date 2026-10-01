@@ -3,7 +3,17 @@ import re
 
 
 def compute_dynamic_match(requirements: list, profile_text: str, default_score: int = 0) -> tuple:
-    requirements = list({req.strip().casefold(): req.strip() for req in requirements if isinstance(req, str) and req.strip()}.values())
+    unique_requirements = []
+    seen = set()
+    for requirement in requirements:
+        if not isinstance(requirement, str):
+            continue
+        label = requirement.strip()
+        key = label.casefold()
+        if label and key not in seen:
+            seen.add(key)
+            unique_requirements.append(label)
+    requirements = unique_requirements
     profile_text = profile_text.casefold()
     if not profile_text.strip():
         return 0, [], requirements

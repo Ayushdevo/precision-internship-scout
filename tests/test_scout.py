@@ -148,3 +148,13 @@ def test_csv_export_preserves_provenance_and_escapes_formula_cells():
     assert row['company'].startswith("'=")
     assert row['source_type'] == 'demo' and row['verified'] == 'False'
     assert 'PRIVATE_RESUME_MARKER' not in text
+
+
+def test_first_requirement_label_is_preserved_when_duplicates_differ_in_case():
+    from scoring import compute_dynamic_match
+    score, matched, missing = compute_dynamic_match(
+        ['PyThOn', 'python', 'SQL', 'sql'], 'python'
+    )
+    assert score == 50
+    assert matched == ['PyThOn']
+    assert missing == ['SQL']
