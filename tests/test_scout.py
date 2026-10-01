@@ -158,3 +158,12 @@ def test_first_requirement_label_is_preserved_when_duplicates_differ_in_case():
     assert score == 50
     assert matched == ['PyThOn']
     assert missing == ['SQL']
+
+
+def test_careers_url_rejects_invalid_ports():
+    from rendering import safe_careers_url
+    assert safe_careers_url('https://jobs.example.com:abc/careers') is None
+    assert safe_careers_url('https://jobs.example.com:65536/careers') is None
+    assert safe_careers_url('https://jobs.example.com:443/careers') == (
+        'https://jobs.example.com:443/careers'
+    )

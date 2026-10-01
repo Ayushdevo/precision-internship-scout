@@ -10,6 +10,8 @@ def safe_careers_url(value: str) -> str | None:
         parsed = urlsplit(value)
         if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
             return None
+        # urlsplit is permissive: accessing .port validates nonnumeric/out-of-range ports.
+        _ = parsed.port
         return value
     except ValueError:
         return None
