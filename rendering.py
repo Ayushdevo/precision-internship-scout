@@ -4,7 +4,10 @@ from urllib.parse import urlsplit
 
 
 def safe_careers_url(value: str) -> str | None:
-    if not isinstance(value, str) or any(char.isspace() for char in value):
+    if not isinstance(value, str) or any(
+        char.isspace() or ord(char) < 32 or ord(char) == 127 or char == "\\"
+        for char in value
+    ):
         return None
     try:
         parsed = urlsplit(value)
