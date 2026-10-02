@@ -23,7 +23,10 @@ def extract_resume_text(uploaded_file) -> str:
         raise ValueError("Resume must be 2 MB or smaller")
     if extension == ".txt":
         try:
-            return data.decode("utf-8-sig")
+            text = data.decode("utf-8-sig")
+            if not text.strip():
+                raise ValueError("No text found in TXT resume")
+            return text
         except UnicodeDecodeError as exc:
             raise ValueError("Save the TXT resume using UTF-8 encoding") from exc
     import pypdf
