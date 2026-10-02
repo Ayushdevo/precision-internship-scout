@@ -14,7 +14,7 @@ def compute_dynamic_match(requirements: list, profile_text: str, default_score: 
             seen.add(key)
             unique_requirements.append(label)
     requirements = unique_requirements
-    profile_text = profile_text.casefold()
+    profile_text = re.sub(r"\s+", " ", profile_text).casefold()
     if not profile_text.strip():
         return 0, [], requirements
     matched, missing = [], []
