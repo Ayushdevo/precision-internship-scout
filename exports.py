@@ -5,7 +5,7 @@ from scoring import compute_dynamic_match
 
 
 def _cell(value):
-    value = str(value)
+    value = "" if value is None else str(value)
     # Spreadsheet applications may evaluate formula-like CSV cells.
     return "'" + value if value.lstrip().startswith(("=", "+", "-", "@")) else value
 
