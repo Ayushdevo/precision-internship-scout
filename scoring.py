@@ -8,7 +8,7 @@ def compute_dynamic_match(requirements: list, profile_text: str, default_score: 
     for requirement in requirements:
         if not isinstance(requirement, str):
             continue
-        label = requirement.strip()
+        label = " ".join(requirement.split())
         key = label.casefold()
         if label and key not in seen:
             seen.add(key)
