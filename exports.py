@@ -1,5 +1,6 @@
 """Portable export of sample matches without candidate resume content."""
 import csv
+from unicodedata import category
 from io import StringIO
 from scoring import compute_dynamic_match
 
@@ -7,7 +8,11 @@ from scoring import compute_dynamic_match
 def _cell(value):
     value = "" if value is None else str(value)
     # Spreadsheet applications may evaluate formula-like CSV cells.
-    return "'" + value if value.lstrip().startswith(("=", "+", "-", "@")) else value
+    probe = value.lstrip()
+    # Unicode format marks (BOM/zero-width controls) can precede formulas.
+    while probe and category(probe[0]) == "Cf":
+        probe = probe[1:].lstrip()
+    return "'" + value if probe.startswith(("=", "+", "-", "@")) else value
 
 
 def export_matches_csv(jobs: list[dict], profile_text: str) -> str:
