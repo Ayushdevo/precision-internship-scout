@@ -24,6 +24,8 @@ def extract_resume_text(uploaded_file) -> str:
     if extension == ".txt":
         try:
             text = data.decode("utf-8-sig")
+            if "\x00" in text:
+                raise ValueError("TXT resume contains NUL bytes")
             if not text.strip():
                 raise ValueError("No text found in TXT resume")
             return text
