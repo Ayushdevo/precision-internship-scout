@@ -1,6 +1,7 @@
 """Escaped presentation helpers for potentially external job data."""
 from html import escape
 from urllib.parse import urlsplit
+from scoring import normalize_requirements
 
 
 def safe_careers_url(value: str) -> str | None:
@@ -23,7 +24,7 @@ def safe_careers_url(value: str) -> str | None:
 def render_job_card(job: dict, score: int, matched: list[str]) -> str:
     badges = "".join(
         f'<span class="req-badge">{"✓" if req in matched else "✗"} {escape(str(req))}</span>'
-        for req in job["requirements"]
+        for req in normalize_requirements(job["requirements"])
     )
     provenance = (
         '<div class="job-card-meta">Illustrative demo listing — not verified</div>'
