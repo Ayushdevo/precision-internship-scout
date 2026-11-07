@@ -2,7 +2,8 @@
 import re
 
 
-def compute_dynamic_match(requirements: list, profile_text: str, default_score: int = 0) -> tuple:
+def normalize_requirements(requirements: list) -> list[str]:
+    """Preserve the first nonempty label, ignoring case/spacing duplicates."""
     unique_requirements = []
     seen = set()
     for requirement in requirements:
@@ -13,7 +14,11 @@ def compute_dynamic_match(requirements: list, profile_text: str, default_score: 
         if label and key not in seen:
             seen.add(key)
             unique_requirements.append(label)
-    requirements = unique_requirements
+    return unique_requirements
+
+
+def compute_dynamic_match(requirements: list, profile_text: str, default_score: int = 0) -> tuple:
+    requirements = normalize_requirements(requirements)
     profile_text = re.sub(r"\s+", " ", profile_text).casefold()
     if not profile_text.strip():
         return 0, [], requirements
