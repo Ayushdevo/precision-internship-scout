@@ -28,4 +28,4 @@ def compute_dynamic_match(requirements: list, profile_text: str, default_score: 
 
 def build_profile_text(skills: str, resume: str) -> str:
     """Only supplied skill evidence and resume text participate in scoring."""
-    return f"{skills}\n{resume}"
+    return f"{skills or ''}\n{resume or ''}"
