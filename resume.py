@@ -29,6 +29,8 @@ def extract_resume_text(uploaded_file) -> str:
                 raise ValueError("TXT resume contains NUL bytes")
             if not text.strip():
                 raise ValueError("No text found in TXT resume")
+            if len(text) > MAX_TEXT_CHARS:
+                raise ValueError("TXT resume exceeds 100,000 characters")
             return text
         except UnicodeDecodeError as exc:
             raise ValueError("Save the TXT resume using UTF-8 encoding") from exc
