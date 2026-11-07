@@ -57,14 +57,15 @@ def fetch_vetted_jobs(role_keyword: str) -> list:
     if not role_keyword or role_keyword.strip() == "":
         return mock_jobs
         
-    keyword_lower = role_keyword.strip().casefold()
+    # Normalize internal whitespace as well as case for pasted search phrases.
+    keyword_lower = " ".join(role_keyword.split()).casefold()
     filtered_jobs = []
     
     for job in mock_jobs:
         # Check if the keyword matches the title, company, or any of the requirements
-        if (keyword_lower in job["title"].lower() or 
-            keyword_lower in job["company"].lower() or 
-            any(keyword_lower in req.lower() for req in job["requirements"])):
+        if (keyword_lower in " ".join(job["title"].split()).casefold() or 
+            keyword_lower in " ".join(job["company"].split()).casefold() or 
+            any(keyword_lower in " ".join(req.split()).casefold() for req in job["requirements"])):
             filtered_jobs.append(job)
             
     # An empty match set is a valid search result.
