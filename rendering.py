@@ -25,11 +25,17 @@ def render_job_card(job: dict, score: int, matched: list[str]) -> str:
         f'<span class="req-badge">{"✓" if req in matched else "✗"} {escape(str(req))}</span>'
         for req in job["requirements"]
     )
+    provenance = (
+        '<div class="job-card-meta">Illustrative demo listing — not verified</div>'
+        if job.get("source_type") == "demo"
+        else '<div class="job-card-meta">Unverified listing</div>'
+        if job.get("verified") is not True else ""
+    )
     style = "success" if score >= 90 else "info" if score >= 75 else "warning"
     return (
         '<div class="job-card"><div class="job-card-header"><div>'
         f'<h3 class="job-card-title">{escape(str(job["company"]))} — {escape(str(job["title"]))}</h3>'
         f'<div class="job-card-meta">{escape(str(job["location"]))}</div></div>'
         f'<span class="match-tag match-tag-{style}">{int(score)}% keyword coverage</span></div>'
-        f'<div>{badges}</div></div>'
+        f'<div>{badges}</div>{provenance}</div>'
     )
