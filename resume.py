@@ -3,6 +3,7 @@ from io import BytesIO
 from pathlib import Path
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024
+MAX_TEXT_CHARS = 100_000
 
 
 def extract_resume_text(uploaded_file) -> str:
