@@ -329,9 +329,9 @@ if deploy_button:
         status.update(label="Sample search complete", state="complete", expanded=False)
 
     st.session_state["scout_jobs"] = vetted_listings
-    st.session_state["scout_query"] = role_keyword.strip().casefold()
+    st.session_state["scout_query"] = " ".join(role_keyword.split()).casefold()
 
-if st.session_state.get("scout_query") != role_keyword.strip().casefold():
+if st.session_state.get("scout_query") != " ".join(role_keyword.split()).casefold():
     st.session_state.pop("scout_jobs", None)
 
 if "scout_jobs" in st.session_state:
