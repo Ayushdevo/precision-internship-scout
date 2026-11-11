@@ -374,7 +374,7 @@ if "scout_jobs" in st.session_state:
             missing_str = ", ".join(missing_reqs) if missing_reqs else "None"
             
             verdict_text = (
-                f"**Keyword coverage:** {len(matched_reqs)} of {len(job['requirements'])} requirements matched.\n\n"
+                f"**Keyword coverage:** {len(matched_reqs)} of {len(matched_reqs) + len(missing_reqs)} requirements matched.\n\n"
                 f"**Matched keywords:** {matched_str}\n\n"
                 f"**Keywords not found:** {missing_str}"
             )
