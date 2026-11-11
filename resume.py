@@ -41,7 +41,15 @@ def extract_resume_text(uploaded_file) -> str:
             raise ValueError("Upload an unencrypted PDF resume")
         if len(reader.pages) > 50:
             raise ValueError("PDF resume must contain at most 50 pages")
-        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        chunks = []
+        text_length = 0
+        for page in reader.pages:
+            chunk = page.extract_text() or ""
+            text_length += len(chunk) + bool(chunks)
+            if text_length > MAX_TEXT_CHARS:
+                raise ValueError("Extracted resume text exceeds 100,000 characters")
+            chunks.append(chunk)
+        text = "\n".join(chunks)
         if not text.strip():
             raise ValueError("No text found; upload a text-based PDF or TXT resume")
         if len(text) > 100000:
