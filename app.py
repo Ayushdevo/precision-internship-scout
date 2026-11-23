@@ -387,7 +387,7 @@ if "scout_jobs" in st.session_state:
             elif severity == "warning":
                 st.warning(verdict_text)
                 
-            link = safe_careers_url(job["target_link"])
+            link = safe_careers_url(job.get("target_link"))
             if link:
                 st.link_button("Open sample careers link", link)
 
