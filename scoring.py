@@ -1,5 +1,6 @@
 """Deterministic keyword coverage, not a hiring prediction."""
 import re
+from unicodedata import normalize
 
 
 def normalize_requirements(requirements: list) -> list[str]:
@@ -10,7 +11,7 @@ def normalize_requirements(requirements: list) -> list[str]:
         if not isinstance(requirement, str):
             continue
         label = " ".join(requirement.split())
-        key = label.casefold()
+        key = normalize("NFC", label).casefold()
         if label and key not in seen:
             seen.add(key)
             unique_requirements.append(label)
@@ -19,12 +20,12 @@ def normalize_requirements(requirements: list) -> list[str]:
 
 def compute_dynamic_match(requirements: list, profile_text: str, default_score: int = 0) -> tuple:
     requirements = normalize_requirements(requirements)
-    profile_text = re.sub(r"\s+", " ", profile_text).casefold()
+    profile_text = re.sub(r"\s+", " ", normalize("NFC", profile_text)).casefold()
     if not profile_text.strip():
         return 0, [], requirements
     matched, missing = [], []
     for req in requirements:
-        pattern = r"(?<![\w+#])" + re.escape(req.casefold()) + r"(?![\w+#])"
+        pattern = r"(?<![\w+#])" + re.escape(normalize("NFC", req).casefold()) + r"(?![\w+#])"
         (matched if re.search(pattern, profile_text) else missing).append(req)
     if not requirements:
         return 0, [], []
